@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+@Repository //Después de Jpa se ponen los datos de la entidad que se trabaja y el tipo de dato del Id
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-    Optional<Cliente> fiindByIdentification(String identification);
+    Optional<Cliente> findByIdentification(String identification);
 }

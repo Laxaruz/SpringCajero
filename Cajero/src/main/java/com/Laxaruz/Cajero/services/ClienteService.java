@@ -7,26 +7,22 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor //Crea Parámetros requeridos para funcionar
 public class ClienteService {
-    @Autowired
-    private ClienteRepository clienteRepository;
-    public Boolean crearCliente(Cliente cliente){
+    //@Autowired Otra Forma de RequiredArgsConstructor pero sin el final
+    private final ClienteRepository clienteRepository;
+    public Cliente crearCliente(Cliente cliente)
+    {
         cliente.setBloqueado(false);
-        cliente.setIntentosFallidos();
-        var clienteOptional = clienteRepository.findById(cliente.getId());
-        if (clienteOptional.isPresent()) {
-            clienteRepository.save(clienteOptional.get());
-            return true;
-        }
-        return false;
+        cliente.setIntentosFallidos(0);
+        return clienteRepository.save(cliente);
     }
 
-    public Optional <Cliente>buscarPorIdentificacion(String identificacion){
-        return clienteRepository.fiindByIdentification(identificacion);
+    public Optional <Cliente> buscarPorIdentificacion(String identificacion){
+        return clienteRepository.findByIdentification(identificacion);
     }
 
-    public boolean validarPin(Cliente cliente, String pin){
+    public boolean validarPin (Cliente cliente, String pin){
         if(cliente.isBloqueado()) return false;
         if (cliente.getPin().equals(pin)){
             cliente.setIntentosFallidos(0);

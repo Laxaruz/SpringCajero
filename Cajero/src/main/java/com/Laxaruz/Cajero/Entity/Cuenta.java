@@ -15,7 +15,7 @@ public class Cuenta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
-    private String numero;
+    private String numeroCuenta;
     private double saldo;
     @Enumerated(EnumType.STRING)
     private TipoCuenta tipo;
