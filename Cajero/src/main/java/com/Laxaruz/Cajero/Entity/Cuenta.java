@@ -1,4 +1,4 @@
-package Entity;
+package com.Laxaruz.Cajero.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
