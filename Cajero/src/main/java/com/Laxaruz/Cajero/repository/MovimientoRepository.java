@@ -12,4 +12,6 @@ public interface MovimientoRepository extends JpaRepository<Movimiento,Long> {
 
     List<Movimiento> findByCuenta(Cuenta cuenta);
     List<Movimiento> findByCuentaOrdenByFechasDesc(Cuenta cuenta);
+
+    List<Movimiento> findByCuentaAndMonto(Cuenta cuenta);
 }

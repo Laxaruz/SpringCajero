@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository //Después de Jpa se ponen los datos de la entidad que se trabaja y el tipo de dato del Id
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-    Optional<Cliente> findByIdentification(String identification);
+    Optional<Cliente> findByIdentificacion(String identificacion);
 }

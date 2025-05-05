@@ -19,7 +19,7 @@ public class ClienteService {
     }
 
     public Optional <Cliente> buscarPorIdentificacion(String identificacion){
-        return clienteRepository.findByIdentification(identificacion);
+        return clienteRepository.findByIdentificacion(identificacion);
     }
 
     public boolean validarPin (Cliente cliente, String pin){
@@ -38,5 +38,35 @@ public class ClienteService {
             clienteRepository.save(cliente);
             return false;
         }
+    }
+    public void desbloquearCliente(String identificacion, String nuevoPin) {
+        Optional<Cliente> optionalCliente = clienteRepository.findByIdentificacion(identificacion);
+        if (optionalCliente.isPresent()) {
+            Cliente cliente = optionalCliente.get();
+            cliente.setBloqueado(false);
+            cliente.setIntentosFallidos(0);
+            cliente.setPin(nuevoPin);
+            clienteRepository.save(cliente);
+        }
+    }
+
+    public void cambiarPin(Cliente cliente, String nuevoPin) {
+        cliente.setPin(nuevoPin);
+        clienteRepository.save(cliente);
+    }
+
+    public void incrementarIntento(Cliente cliente) {
+        cliente.setIntentos(cliente.getIntentos() + 1);
+        clienteRepository.save(cliente);
+    }
+
+    public void reiniciarIntentos(Cliente cliente) {
+        cliente.setIntentos(0);
+        clienteRepository.save(cliente);
+    }
+
+    public void bloquearCliente(Cliente cliente) {
+        cliente.setBloqueado(true);
+        clienteRepository.save(cliente);
     }
 }
