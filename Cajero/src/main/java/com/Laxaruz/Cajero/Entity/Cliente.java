@@ -20,23 +20,4 @@ public class Cliente {
     private int intentosFallidos;
     @OneToMany(mappedBy= "Cliente",cascade = CascadeType.ALL)
     private List<Cuenta> cuentas;
-
-    public static void setIntentosFallidos() {
-    }
-
-    //Métodos que necesitabas para intentos
-    public int getIntentos(){
-        return this.intentosFallidos;
-    }
-    public void setIntentos(int intentos){
-        this.intentosFallidos = intentos;
-    }
-    public void incrementarIntento()
-    {
-        this.intentosFallidos++;
-    }
-    public void reiniciarIntentos(){
-        this.intentosFallidos = 0;
-    }
-
 }

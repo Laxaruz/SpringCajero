@@ -56,12 +56,12 @@ public class ClienteService {
     }
 
     public void incrementarIntento(Cliente cliente) {
-        cliente.setIntentos(cliente.getIntentos() + 1);
+        cliente.setIntentosFallidos(cliente.getIntentosFallidos() + 1);
         clienteRepository.save(cliente);
     }
 
     public void reiniciarIntentos(Cliente cliente) {
-        cliente.setIntentos(0);
+        cliente.setIntentosFallidos(0);
         clienteRepository.save(cliente);
     }
 
