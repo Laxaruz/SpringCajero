@@ -29,8 +29,8 @@ public class ClienteService {
             clienteRepository.save(cliente);
             return true;
         }else {
-            int intentos = cliente.getIntentosFallidos() +1 ;
-            cliente.setIntentosFallidos(intentos);
+            int intentos = cliente.getIntentos() +1 ;
+            cliente.setIntentos(intentos);
             if(intentos >= 3)
             {
                 cliente.setBloqueado(true);
