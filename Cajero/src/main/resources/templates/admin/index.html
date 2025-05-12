@@ -6,7 +6,7 @@
     <title>Admin Dashboard</title>
 </head>
 <body>
-
+<!-- div= . y nombre de las clase -->
     <div class="admin-container"></div>
         <h1>Admin mi banco</h1>
 
@@ -17,6 +17,16 @@
                 <a  th:href="@{admin/crear-cliente}"></a>
                 <i class="fas fa-user-plus"></i>
                 Crear Cliente
+            </li>
+            <li>
+                <a  th:href="@{admin/crear-cuenta}"></a>
+                <i class="fas fa-credit-card"></i>
+                Crear Cuenta
+            </li>
+            <li>
+                <a  th:href="@{admin/desbloquear}"></a>
+                <i class="fas fa-lock.open"></i>
+                Desbloquear Cuenta
             </li>
         </ul>
 </body>
