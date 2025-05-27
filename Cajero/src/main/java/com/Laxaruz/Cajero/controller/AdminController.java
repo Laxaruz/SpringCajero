@@ -5,6 +5,7 @@ import com.Laxaruz.Cajero.Entity.Cuenta;
 import com.Laxaruz.Cajero.Entity.TipoCuenta;
 import com.Laxaruz.Cajero.services.ClienteService;
 import com.Laxaruz.Cajero.services.CuentaService;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
