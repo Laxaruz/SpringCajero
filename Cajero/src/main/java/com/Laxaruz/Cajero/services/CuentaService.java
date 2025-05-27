@@ -37,7 +37,14 @@ public class CuentaService {
         cuenta.setSaldo(nuevoSaldo);
         cuentaRepository.save(cuenta);
     }
+    public List<Cuenta> buscarPorCliente(Cliente cliente) {
+        return cuentaRepository.findByCliente(cliente);}
+
     public Cuenta obtenerCuentaPorClienteActual (String username){
         throw new UnsupportedOperationException("Not implemented yet");
     }
+
+
+
+
 }

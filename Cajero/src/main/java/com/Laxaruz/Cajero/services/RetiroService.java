@@ -14,7 +14,7 @@ public class RetiroService {
     private final ClienteRepository clienteRepository;
     private final MovimientoService movimientoService;
 
-    public String RealizarRetiro(String identificacion, String numeroCuenta,double monto){
+    public String realizarRetiro(String identificacion, String numeroCuenta,double monto){
         Cliente cliente = clienteRepository.findByIdentificacion(identificacion)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
         Cuenta cuenta = cuentaRepository.findByNumero(numeroCuenta)
