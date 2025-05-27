@@ -27,8 +27,8 @@ public class MovimientoService {
                 .build();
         return movimientoRepository.save(movimiento);
     }
-    public List<Movimiento> obtetenerMovimientoPOrCuenta (Cuenta cuenta, double monto){
-        return movimientoRepository.findByCuentaAndMonto(cuenta);
+    public List<Movimiento> obtenerMovimientoPorCuenta (Cuenta cuenta, double monto){
+        return movimientoRepository.findByCuentaAndMonto(cuenta,monto);
     }
     public boolean realizarRetiro(Cuenta cuenta, double monto) {
         if (cuenta.getSaldo() >= monto) {
@@ -54,7 +54,7 @@ public class MovimientoService {
     public List <Movimiento> buscarPorCuenta(String numeroCuenta) {
         Cuenta cuenta = cuentaRepository.findByNumero(numeroCuenta)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
-        return movimientoRepository.findByCuentaOrdenByFechasDesc(cuenta);
+        return movimientoRepository.findByCuentaOrderByFechaDesc(cuenta);
     }
     public boolean realizarConsignacion (Cuenta cuenta, double monto) {
         if(monto <= 0){

@@ -11,7 +11,7 @@ import java.util.List;
 public interface MovimientoRepository extends JpaRepository<Movimiento,Long> {
 
     List<Movimiento> findByCuenta(Cuenta cuenta);
-    List<Movimiento> findByCuentaOrdenByFechasDesc(Cuenta cuenta);
+    List<Movimiento> findByCuentaOrderByFechaDesc(Cuenta cuenta);
 
-    List<Movimiento> findByCuentaAndMonto(Cuenta cuenta);
+    List<Movimiento> findByCuentaAndMonto(Cuenta cuenta, double monto);
 }

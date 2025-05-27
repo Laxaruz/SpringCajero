@@ -2,7 +2,7 @@ package com.Laxaruz.Cajero.Entity;
 import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
-
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +18,7 @@ public class Cliente {
     private String pin;
     private boolean bloqueado;
     private int intentosFallidos;
-    @OneToMany(mappedBy= "Cliente",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy= "cliente",cascade = CascadeType.ALL)
     private List<Cuenta> cuentas;
 
     public int getIntentos() {

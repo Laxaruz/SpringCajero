@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,12 +16,14 @@ public class Cuenta {
     private Long id;
     @Column(unique = true)
     private String numeroCuenta;
+    private String numero;
     private double saldo;
     @Enumerated(EnumType.STRING)
     private TipoCuenta tipo;
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
+    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
     private List<Movimiento> movimientos;
 
 }
