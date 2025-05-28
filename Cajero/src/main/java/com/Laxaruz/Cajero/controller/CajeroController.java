@@ -127,14 +127,19 @@ public class CajeroController {
         Cliente cliente = (Cliente) session.getAttribute("cliente");
         if (cliente == null) {
             return "redirect:/cajero/login";
-        }
-        model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
+        }        model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
         return "cajero/consignar";
     }
+    
     @PostMapping("/consignar")
     public String consignar(@RequestParam String numeroCuenta,
                             @RequestParam double monto,
-                            Model model) {
+                            Model model, HttpSession session) {
+        Cliente cliente = (Cliente) session.getAttribute("cliente");
+        if (cliente == null) {
+            return "redirect:/cajero/login";
+        }
+        
         try {
             Cuenta cuenta = cuentaRepository.findByNumero(numeroCuenta)
                     .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
@@ -145,6 +150,8 @@ public class CajeroController {
             model.addAttribute("error", e.getMessage());
         }
 
+        // Volver a pasar las cuentas para que el template funcione correctamente
+        model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
         return "cajero/consignar";
     }
     @GetMapping("/transferir")
