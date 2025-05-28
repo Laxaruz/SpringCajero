@@ -394,6 +394,212 @@ table tr:last-child td {
     font-size: 0.9rem;
 }
 
+/* Estilos para formularios de transacciones mejorados */
+.header-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+.transaction-form {
+    background: var(--background-white);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+}
+
+.form-row {
+    margin-bottom: 1.5rem;
+}
+
+.currency-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currency-symbol {
+    position: absolute;
+    left: 1rem;
+    z-index: 2;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.currency-input {
+    padding-left: 2.5rem !important;
+    font-family: 'Inter', monospace;
+    font-weight: 500;
+    text-align: right;
+}
+
+.form-select {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    background-color: var(--background-white);
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Botones de montos rápidos */
+.quick-amounts {
+    background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid var(--border-color);
+}
+
+.quick-amounts h4 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-amounts h4 i {
+    color: var(--warning-color);
+}
+
+.amount-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+
+.amount-btn {
+    background: var(--background-white);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.amount-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.amount-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+/* Información de cuenta */
+.account-info {
+    margin: 1.5rem 0;
+    animation: slideInFromTop 0.4s ease-out;
+}
+
+.info-card {
+    background: linear-gradient(145deg, #eff6ff, #dbeafe);
+    border: 1px solid #bfdbfe;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+}
+
+.info-card h4 {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-details {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(191, 219, 254, 0.5);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item .label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.info-item .value {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.info-item .value.positive {
+    color: var(--success-color);
+}
+
+.info-item .value.negative {
+    color: var(--danger-color);
+}
+
+/* Mensajes mejorados */
+.message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    animation: slideInFromTop 0.4s ease-out;
+}
+
+.message.success {
+    background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.message.success i {
+    color: var(--success-color);
+}
+
+.message.error {
+    background: linear-gradient(145deg, #fef2f2, #fecaca);
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+}
+
+.message.error i {
+    color: var(--danger-color);
+}
+
 /* Print Styles */
 @media print {
     body.printing {
@@ -531,5 +737,32 @@ table tr:last-child td {
     .account-info {
         padding: 10px 12px;
         font-size: 0.8rem;
+    }
+}
+
+/* Responsive design para formularios */
+@media (max-width: 768px) {
+    .transaction-form {
+        padding: 1.5rem;
+    }
+    
+    .amount-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .currency-input {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .amount-buttons {
+        grid-template-columns: 1fr;
     }
 }

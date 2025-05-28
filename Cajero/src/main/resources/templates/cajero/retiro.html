@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="header">
-    <h2><i class="fas fa-money-bill-wave"></i> Realizar Retiro</h2>
+    <h2><i class="fas fa-money-bill-wave"></i>Realizar Retiro</h2>
 </div>
 
 <div class="container">
@@ -16,22 +16,62 @@
 
     <form th:action="@{/cajero/retiro}" method="post">
         <div class="form-group">
-            <label for="numeroCuenta"><i class="fas fa-credit-card"></i> Seleccionar Cuenta:</label>
-            <select name="numeroCuenta" id="numeroCuenta" required>
-                <option value="">-- Seleccione una cuenta --</option>
-                <option th:each="cuenta : ${cuentas}"
-                        th:value="${cuenta.numero}"
-                        th:text="${cuenta.numero + ' - Saldo: $' + #numbers.formatDecimal(cuenta.saldo, 1, 2)}">
-                </option>
-            </select>
+            <label for="numeroCuenta"><i class="fas fa-credit-card"></i> Seleccionar Cuenta:</label>                <select name="numeroCuenta" id="numeroCuenta" class="form-select" required>
+                    <option value="">-- Seleccione una cuenta --</option>
+                    <option th:each="cuenta : ${cuentas}"
+                            th:value="${cuenta.numero}"
+                            th:data-saldo="${cuenta.saldo}"
+                            th:text="|${cuenta.numero} - ${cuenta.tipo} - Saldo: ${#numbers.formatInteger(cuenta.saldo, 1, 'COMMA')} COP|">
+                    </option>
+                </select>
+        </div>        <div class="form-group">
+            <label for="monto">
+                <i class="fas fa-coins"></i> Monto a Retirar
+            </label>
+            <div class="currency-input-container">
+                <span class="currency-symbol">$</span>
+                <input type="text" 
+                       name="monto" 
+                       id="monto" 
+                       class="form-input currency-input" 
+                       placeholder="0"
+                       data-raw-value=""
+                       required>
+            </div>
+            <div class="form-focus-line"></div>
+            <div class="form-hint">
+                <i class="fas fa-info-circle"></i>
+                Monto mínimo: <span class="currency-format">$1.000</span> - Múltiplos de $1.000
+            </div>        </div>
+
+        <!-- Selector rápido de montos -->
+        <div class="quick-amounts">
+            <h4><i class="fas fa-lightning"></i> Montos rápidos:</h4>
+            <div class="amount-buttons">
+                <button type="button" class="amount-btn" data-amount="10000">$10.000</button>
+                <button type="button" class="amount-btn" data-amount="20000">$20.000</button>
+                <button type="button" class="amount-btn" data-amount="50000">$50.000</button>
+                <button type="button" class="amount-btn" data-amount="100000">$100.000</button>
+                <button type="button" class="amount-btn" data-amount="200000">$200.000</button>
+                <button type="button" class="amount-btn" data-amount="500000">$500.000</button>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="monto"><i class="fas fa-coins"></i> Monto a Retirar:</label>
-            <input type="number" name="monto" id="monto" min="1" step="1000" placeholder="Ingrese el monto" required>
-            <small style="color: #666; font-size: 0.85rem; margin-top: 5px; display: block;">
-                <i class="fas fa-info-circle"></i> Monto mínimo: $1,000
-            </small>
+        <!-- Información de la cuenta seleccionada -->
+        <div class="account-info" id="accountInfo" style="display: none;">
+            <div class="info-card">
+                <h4><i class="fas fa-wallet"></i> Información de la cuenta</h4>
+                <div class="info-details">
+                    <div class="info-item">
+                        <span class="label">Saldo disponible:</span>
+                        <span class="value" id="saldoDisponible">$0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Saldo después del retiro:</span>
+                        <span class="value" id="saldoDespues">$0</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <input type="hidden" name="identificacion" th:value="${cuentas[0].cliente.identificacion}">
@@ -43,8 +83,117 @@
             <a th:href="@{/cajero/menu}" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Cancelar
             </a>
-        </div>
-    </form>
+        </div>    </form>
 </div>
+
+<script>
+// Formateo de moneda colombiana
+function formatCurrency(value) {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0
+    }).format(value);
+}
+
+// Manejador del input de monto
+document.getElementById('monto').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/[^\d]/g, '');
+    let numericValue = parseInt(value) || 0;
+    
+    // Formatear y mostrar
+    if (numericValue > 0) {
+        e.target.value = numericValue.toLocaleString('es-CO');
+    } else {
+        e.target.value = '';
+    }
+    
+    // Guardar valor sin formato
+    e.target.setAttribute('data-raw-value', numericValue);
+    
+    updateAccountInfo();
+});
+
+// Botones de montos rápidos
+document.querySelectorAll('.amount-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const amount = parseInt(this.getAttribute('data-amount'));
+        const montoInput = document.getElementById('monto');
+        
+        montoInput.value = amount.toLocaleString('es-CO');
+        montoInput.setAttribute('data-raw-value', amount);
+        
+        // Remover clase activa de otros botones
+        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        updateAccountInfo();
+    });
+});
+
+// Selector de cuenta
+document.getElementById('numeroCuenta').addEventListener('change', function() {
+    updateAccountInfo();
+});
+
+function updateAccountInfo() {
+    const cuentaSelect = document.getElementById('numeroCuenta');
+    const montoInput = document.getElementById('monto');
+    const accountInfo = document.getElementById('accountInfo');
+    
+    if (cuentaSelect.value) {
+        const saldoDisponible = parseFloat(cuentaSelect.selectedOptions[0].getAttribute('data-saldo')) || 0;
+        const montoRetiro = parseInt(montoInput.getAttribute('data-raw-value')) || 0;
+        const saldoDespues = saldoDisponible - montoRetiro;
+        
+        document.getElementById('saldoDisponible').textContent = formatCurrency(saldoDisponible);
+        document.getElementById('saldoDespues').textContent = formatCurrency(saldoDespues);
+        document.getElementById('saldoDespues').className = saldoDespues >= 0 ? 'value positive' : 'value negative';
+        
+        accountInfo.style.display = 'block';
+    } else {
+        accountInfo.style.display = 'none';
+    }
+}
+
+// Validación del formulario
+document.querySelector('form').addEventListener('submit', function(e) {
+    const monto = parseInt(document.getElementById('monto').getAttribute('data-raw-value')) || 0;
+    const cuenta = document.getElementById('numeroCuenta').value;
+    
+    if (!cuenta) {
+        e.preventDefault();
+        alert('Por favor seleccione una cuenta');
+        return;
+    }
+    
+    if (monto < 1000) {
+        e.preventDefault();
+        alert('El monto mínimo de retiro es $1.000');
+        return;
+    }
+    
+    if (monto % 1000 !== 0) {
+        e.preventDefault();
+        alert('El monto debe ser múltiplo de $1.000');
+        return;
+    }
+    
+    // Actualizar el campo hidden con el valor real
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'monto';
+    hiddenInput.value = monto;
+    this.appendChild(hiddenInput);
+    
+    // Remover el input original para evitar conflictos
+    document.getElementById('monto').name = '';
+});
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    updateAccountInfo();
+});
+</script>
 </body>
 </html>

@@ -39,15 +39,25 @@
             <input type="text" id="numeroCuentaDestino" name="numeroCuentaDestino"
                    placeholder="Ingrese el número de cuenta" required onblur="buscarTitular()">
             <span id="titularInfo" class="info-text"></span>
-        </div>
-
-        <div class="form-group">
-            <label for="monto"><i class="fas fa-money-bill-wave"></i> Monto a Transferir:</label>
-            <input type="number" id="monto" name="monto" step="1000" min="1000"
-                   placeholder="Ingrese el monto" required>
-            <small style="color: #666; font-size: 0.85rem; margin-top: 5px; display: block;">
-                <i class="fas fa-info-circle"></i> Monto mínimo: $1,000
-            </small>
+        </div>        <div class="form-group">
+            <label for="monto">
+                <i class="fas fa-money-bill-wave"></i> Monto a Transferir
+            </label>
+            <div class="currency-input-container">
+                <span class="currency-symbol">$</span>
+                <input type="text" 
+                       id="monto" 
+                       name="monto" 
+                       class="form-input currency-input"
+                       placeholder="0"
+                       data-raw-value=""
+                       required>
+            </div>
+            <div class="form-focus-line"></div>
+            <div class="form-hint">
+                <i class="fas fa-info-circle"></i>
+                Monto mínimo: <span class="currency-format">$1.000</span>
+            </div>
         </div>
 
         <div class="form-actions">
@@ -57,8 +67,62 @@
             <a th:href="@{/cajero/menu}" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Cancelar
             </a>
-        </div>
-    </form>
+        </div>    </form>
 </div>
+
+<script>
+// Formateo de moneda colombiana
+function formatCurrency(value) {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0
+    }).format(value);
+}
+
+// Manejador del input de monto
+document.getElementById('monto').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/[^\d]/g, '');
+    let numericValue = parseInt(value) || 0;
+    
+    // Formatear y mostrar
+    if (numericValue > 0) {
+        e.target.value = numericValue.toLocaleString('es-CO');
+    } else {
+        e.target.value = '';
+    }
+    
+    // Guardar valor sin formato
+    e.target.setAttribute('data-raw-value', numericValue);
+});
+
+// Validación del formulario
+document.querySelector('form').addEventListener('submit', function(e) {
+    const monto = parseInt(document.getElementById('monto').getAttribute('data-raw-value')) || 0;
+    const cuenta = document.getElementById('numeroCuentaDestino').value;
+    
+    if (!cuenta) {
+        e.preventDefault();
+        alert('Por favor ingrese la cuenta destino');
+        return;
+    }
+    
+    if (monto < 1000) {
+        e.preventDefault();
+        alert('El monto mínimo de transferencia es $1.000');
+        return;
+    }
+    
+    // Actualizar el campo hidden con el valor real
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'monto';
+    hiddenInput.value = monto;
+    this.appendChild(hiddenInput);
+    
+    // Remover el input original para evitar conflictos
+    document.getElementById('monto').name = '';
+});
+</script>
 </body>
 </html>
