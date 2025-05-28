@@ -18,7 +18,7 @@ public class CuentaService {
     public void crearCuenta(Cliente cliente, String numeroCuenta, TipoCuenta tipo, Double saldoInicial){
         Cuenta cuenta = Cuenta.builder()
                 .cliente(cliente)
-                .numeroCuenta(numeroCuenta)
+                .numero(numeroCuenta)
                 .tipo(tipo)
                 .saldo(saldoInicial)
                 .build();
@@ -43,8 +43,5 @@ public class CuentaService {
     public Cuenta obtenerCuentaPorClienteActual (String username){
         throw new UnsupportedOperationException("Not implemented yet");
     }
-
-
-
 
 }

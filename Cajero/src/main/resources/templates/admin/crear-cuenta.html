@@ -1,56 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Crear Cuenta 🤑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - Panel de Administración</title>
     <link rel="stylesheet" th:href="@{/styles/admin.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="admin-container">
-    <h2><i class="fas fa-credit-card"></i>Crear Cuenta</h2>
+    <div class="admin-container">
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-credit-card"></i>Crear Nueva Cuenta</h2>
+                <p>Abra una nueva cuenta bancaria para un cliente existente</p>
+            </div>
 
-    <form th:action="@{/admin/crear-cuenta}" method="post"th:object="${cuenta}">
-        <div class="form-group">
-            <label><i class="fas fa-user-tie"></i>Identificación Cliente: </label>
-            <input type="text"  name="identificacion" required>
+            <form th:action="@{/admin/crear-cuenta}" method="post" th:object="${cuenta}">
+                <div class="form-group">
+                    <label for="identificacion">
+                        <i class="fas fa-user-tie"></i>Identificación del Cliente
+                    </label>
+                    <input type="text" 
+                           id="identificacion"
+                           name="identificacion" 
+                           class="form-input"
+                           placeholder="Ingrese la identificación del cliente existente"
+                           required>
+                    <div class="form-focus-line"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="numero">
+                        <i class="fas fa-hashtag"></i>Número de Cuenta
+                    </label>
+                    <input type="text" 
+                           id="numero"
+                           name="numero" 
+                           class="form-input"
+                           placeholder="Número único de la cuenta (ej: 123456789)"
+                           required>
+                    <div class="form-focus-line"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo">
+                        <i class="fas fa-list-alt"></i>Tipo de Cuenta
+                    </label>
+                    <select id="tipo" name="tipo" class="form-select">
+                        <option value="">Seleccione el tipo de cuenta</option>
+                        <option value="AHORROS">💰 Cuenta de Ahorros</option>
+                        <option value="CORRIENTE">💳 Cuenta Corriente</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="saldo">
+                        <i class="fas fa-coins"></i>Saldo Inicial
+                    </label>
+                    <input type="number" 
+                           id="saldo"
+                           name="saldo" 
+                           class="form-input"
+                           placeholder="Monto inicial para la cuenta"
+                           min="0"
+                           step="0.01"
+                           required>
+                    <div class="form-focus-line"></div>
+                    <small style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.25rem; display: block;">
+                        <i class="fas fa-info-circle"></i> El saldo inicial debe ser mayor o igual a $0
+                    </small>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i>Crear Cuenta
+                </button>
+            </form>
+
+            <div th:if="${mensaje}" 
+                 th:text="${mensaje}"
+                 th:class="${error} ? 'message error': 'message success'">
+                <i th:class="${error} ? 'fas fa-exclamation-triangle': 'fas fa-check-circle'"></i>
+            </div>
+
+            <a th:href="@{/admin}" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i>Volver al Panel
+            </a>
         </div>
-
-        <div class="form-group">
-            <label><i class="fas fa-hashtag"></i>Número de Cuenta: </label>
-            <input type="text"  name="numero" required>
-        </div>
-
-        <div class="form-group">
-            <label><i class="fas fa-list-alt"></i>Tipo de Cuenta: </label>
-            <select name="tipo">
-                <option value="AHORROS">Ahorros</option>
-                <option value="CORRIENTE">Corriente</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>
-                <i class="fas fa-coins"></i>Saldo Inicial:
-            </label>
-            <input type="number" name="saldo" required>
-        </div>
-
-        <button type="submit" class="admin-btn">
-            <i class="fas fa-save"></i>Crear cuenta
-        </button>
-    </form>
-
-    <div  th:if="${mensaje}" th:text="${mensaje}"
-          th:class="${error} ? 'message error': 'message success'"></div>
-
-    <a th:href="@{/admin}" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
     </div>
-
-
 </body>
 </html>

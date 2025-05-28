@@ -1,122 +1,151 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desbloquear Cliente - Panel de Administración</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Desbloquear Cuenta - Panel de Administración</title>
     <link rel="stylesheet" th:href="@{/styles/admin.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="admin-container">
-    <!-- Header -->
-    <div class="admin-header">
-        <h1><i class="fas fa-unlock-alt"></i> Desbloquear Cliente</h1>
-        <p class="admin-subtitle">Restablece el acceso de un cliente bloqueado</p>
-    </div>
+    <div class="admin-container">
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-unlock-alt"></i> Desbloquear Cuenta</h2>
+                <p>Restaure el acceso a cuentas bloqueadas por intentos fallidos</p>
+            </div>
 
-    <!-- Main Content Card -->
-    <div class="admin-card">
-        <div class="card-header">
-            <h2><i class="fas fa-key"></i> Información de Desbloqueo</h2>
-            <p class="card-description">Ingresa la identificación del cliente y asigna un nuevo PIN</p>
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Información importante:</strong><br>
+                    Las cuentas se bloquean automáticamente después de 3 intentos fallidos de inicio de sesión. 
+                    Use esta función para restaurar el acceso del cliente.
+                </div>
+            </div>
+
+            <form th:action="@{/admin/desbloquear}" method="post" class="admin-form">
+                <div class="form-group">
+                    <label for="identificacion">
+                        <i class="fas fa-id-card"></i> Identificación del Cliente
+                    </label>
+                    <input type="text" 
+                           id="identificacion"
+                           name="identificacion" 
+                           class="form-input"
+                           placeholder="Ingrese la identificación del cliente bloqueado"
+                           pattern="[0-9]+"
+                           title="Solo se permiten números"
+                           required>
+                    <div class="form-focus-line"></div>
+                    <small class="form-hint">
+                        <i class="fas fa-search"></i>
+                        Ingrese el número de documento del cliente para buscar y desbloquear su cuenta
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="nuevoPin">
+                        <i class="fas fa-key"></i> Nuevo PIN (Opcional)
+                    </label>
+                    <input type="password" 
+                           id="nuevoPin"
+                           name="nuevoPin" 
+                           class="form-input"
+                           placeholder="Ingrese un nuevo PIN de 4 dígitos (opcional)"
+                           pattern="[0-9]{4}"
+                           title="El PIN debe tener exactamente 4 dígitos"
+                           maxlength="4">
+                    <div class="form-focus-line"></div>
+                    <small class="form-hint">
+                        <i class="fas fa-shield-alt"></i>
+                        Opcionalmente, puede asignar un nuevo PIN de 4 dígitos. Si no especifica uno, se mantendrá el PIN actual.
+                    </small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-unlock"></i> Desbloquear Cliente
+                    </button>
+                    <a th:href="@{/admin}" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver al Panel
+                    </a>
+                </div>
+            </form>
+
+            <!-- Message Display -->
+            <div th:if="${mensaje}" 
+                 th:text="${mensaje}"
+                 th:class="${error} ? 'message error' : 'message success'">
+                <i th:class="${error} ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle'"></i>
+                Mensaje del sistema
+            </div>
+
+            <div th:if="${error}" 
+                 th:text="${error}"
+                 class="message error">
+                <i class="fas fa-exclamation-triangle"></i>
+                Mensaje de error
+            </div>
+
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Importante:</strong> Al desbloquear una cuenta, el contador de intentos se restablece a cero. 
+                    Asegúrese de informar al cliente sobre el estado de su cuenta y el nuevo PIN si fue modificado.
+                </div>
+            </div>
         </div>
-
-        <form th:action="@{/admin/desbloquear}" method="post" class="admin-form">
-            <div class="form-group">
-                <label for="identificacion">
-                    <i class="fas fa-id-card"></i> Número de Identificación
-                </label>
-                <input type="text"
-                       id="identificacion"
-                       name="identificacion"
-                       placeholder="Ej: 12345678"
-                       pattern="[0-9]+"
-                       title="Solo se permiten números"
-                       required>
-                <small class="form-hint">
-                    <i class="fas fa-info-circle"></i>
-                    Ingresa el número de cédula del cliente a desbloquear
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="nuevoPin">
-                    <i class="fas fa-lock"></i> Nuevo PIN
-                </label>
-                <input type="password"
-                       id="nuevoPin"
-                       name="nuevoPin"
-                       placeholder="Nuevo PIN (4 dígitos)"
-                       pattern="[0-9]{4}"
-                       title="El PIN debe tener exactamente 4 dígitos"
-                       maxlength="4"
-                       required>
-                <small class="form-hint">
-                    <i class="fas fa-shield-alt"></i>
-                    El PIN debe contener exactamente 4 dígitos numéricos
-                </small>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-unlock"></i> Desbloquear Cliente
-                </button>
-                <a th:href="@{/admin}" class="btn-secondary">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
-            </div>
-        </form>
-
-        <!-- Message Display -->
-        <div th:if="${mensaje}"
-             th:text="${mensaje}"
-             th:class="${error} ? 'message error' : 'message success'">
-            Mensaje del sistema
-        </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="admin-navigation">
-        <a th:href="@{/admin}" class="nav-link">
-            <i class="fas fa-arrow-left"></i> Volver al Panel Principal
-        </a>
-    </div>
-</div>
+    <script>
+        // PIN input validation
+        document.getElementById('nuevoPin').addEventListener('input', function() {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Limit to 4 digits
+            if (this.value.length > 4) {
+                this.value = this.value.slice(0, 4);
+            }
+        });
 
-<script>
-    document.getElementById('nuevoPin').addEventListener('input', function() {
-        // Only allow numbers
-        this.value = this.value.replace(/[^0-9]/g, '');
+        // Identification input validation
+        document.getElementById('identificacion').addEventListener('input', function() {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
 
-        // Limit to 4 digits
-        if (this.value.length > 4) {
-            this.value = this.value.slice(0, 4);
-        }
-    });
+        // Form validation
+        document.querySelector('.admin-form').addEventListener('submit', function(e) {
+            const pin = document.getElementById('nuevoPin').value;
+            const identificacion = document.getElementById('identificacion').value;
 
-    // Form validation
-    document.querySelector('.admin-form').addEventListener('submit', function(e) {
-        const pin = document.getElementById('nuevoPin').value;
-        const identificacion = document.getElementById('identificacion').value;
+            if (pin && pin.length !== 4) {
+                e.preventDefault();
+                alert('El PIN debe tener exactamente 4 dígitos o estar vacío');
+                return false;
+            }
 
-        if (pin.length !== 4) {
-            e.preventDefault();
-            alert('El PIN debe tener exactamente 4 dígitos');
-            return false;
-        }
+            if (identificacion.trim() === '') {
+                e.preventDefault();
+                alert('La identificación es requerida');
+                return false;
+            }
 
-        if (identificacion.trim() === '') {
-            e.preventDefault();
-            alert('La identificación es requerida');
-            return false;
-        }
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        });
 
-        const submitBtn = this.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-    });
-</script>
+        // Auto-focus on first input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('identificacion').focus();
+        });
+    </script>
 </body>
 </html>
