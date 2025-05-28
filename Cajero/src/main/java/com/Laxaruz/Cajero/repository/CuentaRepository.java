@@ -13,8 +13,4 @@ public interface CuentaRepository extends JpaRepository<Cuenta,Long> {
     Optional<Cuenta> findByNumero(String numero);
     List<Cuenta> findByCliente(Cliente cliente);
     Cuenta save(Cuenta cuenta);
-
-    List<Cuenta> NumeroCuenta(String numeroCuenta);
-
-    List<Cuenta> numeroCuenta(String numeroCuenta);
 }

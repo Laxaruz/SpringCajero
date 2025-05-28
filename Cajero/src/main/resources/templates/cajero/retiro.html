@@ -25,7 +25,7 @@
 
         <div class="form-group">
             <label for="monto"><i class="fas fa-coins"></i> Monto a retirar:</label>
-            <input type="number" name="monto" min="1" required>
+            <input type="number" name="monto"  id="monto" min="1" required>
         </div>
 
         <input type="hidden" name="identificacion" th:value="${cuentas[0].cliente.identificacion}">

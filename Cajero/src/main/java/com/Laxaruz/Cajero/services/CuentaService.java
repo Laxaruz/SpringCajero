@@ -15,10 +15,10 @@ import java.util.Optional;
 public class CuentaService {
     private final CuentaRepository cuentaRepository;
 
-    public Cuenta crearCuenta(Cliente cliente, String numeroCuenta, TipoCuenta tipo, Double saldoInicial){
+    public Cuenta crearCuenta(Cliente cliente, String numero, TipoCuenta tipo, Double saldoInicial){
         Cuenta cuenta = Cuenta.builder()
                 .cliente(cliente)
-                .numeroCuenta(numeroCuenta)
+                .numero(numero)
                 .tipo(tipo)
                 .saldo(saldoInicial)
                 .build();

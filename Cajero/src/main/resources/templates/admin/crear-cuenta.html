@@ -13,12 +13,12 @@
     <form th:action="@{/admin/crear-cuenta}" method="post"th:object="${cuenta}">
         <div class="form-group">
             <label><i class="fas fa-user-tie"></i>Identificación Cliente: </label>
-            <input type="text" th:field="*{}" name="numero" required>
+            <input type="text"  name="identificacion" required>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-hashtag"></i>Número de Cuenta: </label>
-            <input type="text" th:field="*{}" name="identificacion" required>
+            <input type="text"  name="numero" required>
         </div>
 
         <div class="form-group">
