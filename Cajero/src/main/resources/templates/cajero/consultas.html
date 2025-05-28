@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Tus Cuentas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/styles/cajero.css}">
+</head>
+<body>
+<div class="header">
+    <h2><i class="fas fa-wallet"></i> Consulta de Cuentas</h2>
+</div>
+
+<div class="container">
+    <ul class="cuenta-list">
+        <li th:each="cuenta : ${cuentas}">
+            <div class="cuenta-info">
+                <div class="cuenta-numero">
+                    <i class="fas fa-credit-card"></i>
+                    <span th:text="${cuenta.numero}"></span>
+                </div>
+                <div class="cuenta-tipo" th:text="${cuenta.tipo}">Cuenta Corriente</div>
+            </div>
+            <div class="cuenta-saldo">
+                $<span th:text="${#numbers.formatDecimal(cuenta.saldo, 1, 2)}"></span>
+            </div>
+            <a th:href="@{|/cajero/movimientos/${cuenta.numero}|}" class="btn-secondary">
+                <i class="fas fa-list"></i> Ver Movimientos
+            </a>
+        </li>
+    </ul>
+
+    <div class="form-actions">
+        <a th:href="@{/cajero/menu}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Volver al Menú
+        </a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,98 +1,187 @@
-/* login.css */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #004a99;
-    color: white;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+* {
     margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-h2 {
-    color: #ffcc00;
-    margin-bottom: 30px;
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 24px;
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
 
 .login-container {
-    background-color: #0066cc;
-    border: 2px solid #ffcc00;
-    border-radius: 10px;
-    padding: 30px;
-    width: 90%;
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
     max-width: 400px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.login-container h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.login-container h2 i {
+    margin-right: 12px;
+    color: #2196F3;
+    font-size: 1.6rem;
 }
 
 form {
     display: flex;
     flex-direction: column;
+    gap: 20px;
 }
 
 label {
-    margin-bottom: 8px;
-    font-weight: bold;
-    text-transform: uppercase;
-    display: block;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+label i {
+    margin-right: 8px;
+    color: #2196F3;
+    width: 16px;
+    text-align: center;
 }
 
 input[type="text"],
 input[type="password"] {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ffcc00;
-    border-radius: 5px;
-    background-color: #f8f8f8;
-    font-size: 16px;
-    box-sizing: border-box;
-    margin-bottom: 20px;
+    padding: 14px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    background: #fafafa;
+    color: #333;
+    font-family: inherit;
 }
 
-button[type="submit"] {
-    background-color: #ffcc00;
-    color: #004a99;
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #2196F3;
+    background: white;
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+    color: #999;
+}
+
+button {
+    background: #2196F3;
+    color: white;
+    padding: 16px 24px;
     border: none;
-    padding: 12px;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
-    text-transform: uppercase;
-    transition: background-color 0.3s;
-    width: 100%;
+    transition: background-color 0.3s ease;
+    margin-top: 8px;
+    font-family: inherit;
 }
 
-button[type="submit"]:hover {
-    background-color: #ffdd33;
+button:hover {
+    background: #1976D2;
+}
+
+button:active {
+    background: #1565C0;
+}
+
+.error-message {
+    color: #d32f2f;
+    font-weight: 500;
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: #ffebee;
+    border-radius: 6px;
+    border: 1px solid #ffcdd2;
+    font-size: 0.9rem;
 }
 
 .links {
-    margin-top: 20px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     text-align: center;
 }
 
 .links a {
-    color: #ffcc00;
+    color: #666;
     text-decoration: none;
-    margin: 0 10px;
-    font-size: 14px;
-    transition: color 0.3s;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 6px;
 }
 
 .links a:hover {
-    color: white;
-    text-decoration: underline;
+    color: #2196F3;
+    background: #f3f8ff;
 }
 
-.error-message {
-    color: #ff6666;
-    text-align: center;
-    margin-top: 15px;
-    font-weight: bold;
+.links a i {
+    margin-right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .login-container {
+        margin: 20px;
+        padding: 30px 24px;
+        max-width: none;
+    }
+
+    .login-container h2 {
+        font-size: 1.6rem;
+        margin-bottom: 24px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+    }
+
+    button {
+        padding: 14px 20px;
+        font-size: 0.95rem;
+    }
+
+    form {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 320px) {
+    .login-container {
+        margin: 15px;
+        padding: 24px 20px;
+    }
+
+    .login-container h2 {
+        font-size: 1.4rem;
+    }
 }

@@ -4,7 +4,6 @@ import com.Laxaruz.Cajero.Entity.Cuenta;
 import com.Laxaruz.Cajero.dto.TransferenciaForm;
 import com.Laxaruz.Cajero.repository.ClienteRepository;
 import com.Laxaruz.Cajero.repository.CuentaRepository;
-import com.Laxaruz.Cajero.repository.MovimientoRepository;
 import com.Laxaruz.Cajero.services.ClienteService;
 import com.Laxaruz.Cajero.services.CuentaService;
 import com.Laxaruz.Cajero.services.MovimientoService;
@@ -28,7 +27,7 @@ public class CajeroController {
     private final RetiroService retiroService;
     private final CuentaRepository cuentaRepository;
 
-    @GetMapping
+    @GetMapping("/login")
     public String loginForm() {
         return "cajero/login";
     }
@@ -65,20 +64,20 @@ public class CajeroController {
 
     @GetMapping("/menu")
     public String menu(HttpSession session, Model model) {
-        Cliente cliente = (Cliente) session.
-                getAttribute("cliente");
+        Cliente cliente = (Cliente) session.getAttribute("cliente");
         if (cliente == null) {
-            return "redirect:/cajero";
-
-
+            return "redirect:/cajero/login";
         }
-            model.addAttribute("cliente", cliente);
-            model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
-            return "cajero/menu";
-        }
+        model.addAttribute("cliente", cliente);
+        model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
+        return "cajero/menu";
+    }
     @GetMapping("/consultas")
     public String consultas(Model model, HttpSession session) {
         Cliente cliente = (Cliente) session.getAttribute("cliente");
+        if (cliente == null) {
+            return "redirect:/cajero/login";
+        }
         model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
         return "cajero/consultas";
     }
@@ -86,27 +85,28 @@ public class CajeroController {
     @GetMapping("/movimientos/{numero}")
     public String movimientos(@PathVariable String numero, Model model, HttpSession session) {
         Cliente cliente = (Cliente) session.getAttribute("cliente");
-        if (cliente == null) return "redirect:/cajero";
+        if (cliente == null) return "redirect:/cajero/login";
 
         try {
             var movimientos = movimientoService.buscarPorCuenta(numero);
             model.addAttribute("movimientos", movimientos);
+            model.addAttribute("numeroCuenta", numero);
             return "cajero/movimientos";
         } catch (Exception e) {
-            model.addAttribute("error","No fue posible obtener los movimientos: " + e.getMessage());
+            model.addAttribute("error", "No fue posible obtener los movimientos: " + e.getMessage());
             return "cajero/consultas";
         }
     }
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/cajero";
+        return "redirect:/cajero/login";
     }
     @GetMapping("/retiro")
     public String mostrarFormularioRetiro(Model model, HttpSession session) {
         Cliente cliente = (Cliente) session.getAttribute("cliente");
         if (cliente == null) {
-            return "redirect:/cajero";
+            return "redirect:/cajero/login";
         }
         model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
         return "cajero/retiro";
@@ -127,7 +127,7 @@ public class CajeroController {
     public String mostrarFormularioConsignacion(Model model, HttpSession session) {
         Cliente cliente = (Cliente) session.getAttribute("cliente");
         if (cliente == null) {
-            return "redirect:/cajero";
+            return "redirect:/cajero/login";
         }
         model.addAttribute("cuentas", cuentaService.buscarPorCliente(cliente));
         return "cajero/consignar";
@@ -159,7 +159,7 @@ public class CajeroController {
                              HttpSession session,
                              Model model) {
         Cliente cliente = (Cliente) session.getAttribute("cliente");
-        if (cliente == null) return "redirect:/cajero";
+        if (cliente == null) return "redirect:/cajero/login";
 
         Cuenta origen = cuentaService.buscarPorCliente(cliente)
                 .stream()
@@ -184,8 +184,8 @@ public class CajeroController {
     @GetMapping("/titular")
     @ResponseBody
     public Map<String, String> obtenerTitular(@RequestParam String numero){
-        return  cuentaService.buscarPorNumero(numero)
-                .map(cuenta -> Map.of("nombre",cuenta.getCliente().getNombreCompleto()))
+        return cuentaService.buscarPorNumero(numero)
+                .map(cuenta -> Map.of("nombre", cuenta.getCliente().getNombre()))
                 .orElse(Map.of());
     }
     @GetMapping("/cambiar-clave")
@@ -198,27 +198,21 @@ public class CajeroController {
                                HttpSession session, Model model){
         Cliente cliente = (Cliente) session.getAttribute("cliente");
         if (cliente == null){
-            return "redirect:/cajero";
+            return "redirect:/cajero/login";
         }
-        //
         if (!cliente.getPin().equals(claveActual)) {
             model.addAttribute("error", "Clave actual incorrecta.");
             return "cajero/cambiar-clave";
         }
-        //
         if (!nuevaClave.equals(confirmarClave)) {
             model.addAttribute("error", "Las nuevas claves no coinciden.");
             return "cajero/cambiar-clave";
         }
-        //
         clienteService.cambiarPin(cliente, nuevaClave);
 
         session.setAttribute("cliente", cliente);
 
         model.addAttribute("mensaje", "Clave cambiada exitosamente.");
         return "cajero/cambiar-clave";
-
-
     }
-
 }

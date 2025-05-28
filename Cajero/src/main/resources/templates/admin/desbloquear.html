@@ -1,34 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Desbloquear</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desbloquear Cliente - Panel de Administración</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/styles/admin.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="admin-container">
-    <h2><i class="fas fa-lock-open"></i>Desbloquear</h2>
-    <form th:action="@{/admin/desbloquear}" method="post">
-        <div class="form-group">
-            <label><i class="fas fa-id-card"></i>Identificación: </label>
-            <input type="text" required>
+    <!-- Header -->
+    <div class="admin-header">
+        <h1><i class="fas fa-unlock-alt"></i> Desbloquear Cliente</h1>
+        <p class="admin-subtitle">Restablece el acceso de un cliente bloqueado</p>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="admin-card">
+        <div class="card-header">
+            <h2><i class="fas fa-key"></i> Información de Desbloqueo</h2>
+            <p class="card-description">Ingresa la identificación del cliente y asigna un nuevo PIN</p>
         </div>
 
-        <div class="form-group">
-            <label><i class="fas fa-key"></i>NUEVO PIN: </label>
-            <input type="password" name="nuevoPin"  required>
+        <form th:action="@{/admin/desbloquear}" method="post" class="admin-form">
+            <div class="form-group">
+                <label for="identificacion">
+                    <i class="fas fa-id-card"></i> Número de Identificación
+                </label>
+                <input type="text"
+                       id="identificacion"
+                       name="identificacion"
+                       placeholder="Ej: 12345678"
+                       pattern="[0-9]+"
+                       title="Solo se permiten números"
+                       required>
+                <small class="form-hint">
+                    <i class="fas fa-info-circle"></i>
+                    Ingresa el número de cédula del cliente a desbloquear
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="nuevoPin">
+                    <i class="fas fa-lock"></i> Nuevo PIN
+                </label>
+                <input type="password"
+                       id="nuevoPin"
+                       name="nuevoPin"
+                       placeholder="Nuevo PIN (4 dígitos)"
+                       pattern="[0-9]{4}"
+                       title="El PIN debe tener exactamente 4 dígitos"
+                       maxlength="4"
+                       required>
+                <small class="form-hint">
+                    <i class="fas fa-shield-alt"></i>
+                    El PIN debe contener exactamente 4 dígitos numéricos
+                </small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-unlock"></i> Desbloquear Cliente
+                </button>
+                <a th:href="@{/admin}" class="btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+
+        <!-- Message Display -->
+        <div th:if="${mensaje}"
+             th:text="${mensaje}"
+             th:class="${error} ? 'message error' : 'message success'">
+            Mensaje del sistema
         </div>
+    </div>
 
-        <button type="submit" class="admin-btn">
-            <i class="fas fa-unlock"></i>Desbloquer ahora
-        </button>
-    </form>
-
-    <div  th:if="${mensaje}" th:text="${mensaje}"
-          th:class="${error} ? 'message error': 'message success'"></div>
-
-    <a th:href="@{/admin}" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
+    <!-- Navigation -->
+    <div class="admin-navigation">
+        <a th:href="@{/admin}" class="nav-link">
+            <i class="fas fa-arrow-left"></i> Volver al Panel Principal
+        </a>
+    </div>
 </div>
+
+<script>
+    document.getElementById('nuevoPin').addEventListener('input', function() {
+        // Only allow numbers
+        this.value = this.value.replace(/[^0-9]/g, '');
+
+        // Limit to 4 digits
+        if (this.value.length > 4) {
+            this.value = this.value.slice(0, 4);
+        }
+    });
+
+    // Form validation
+    document.querySelector('.admin-form').addEventListener('submit', function(e) {
+        const pin = document.getElementById('nuevoPin').value;
+        const identificacion = document.getElementById('identificacion').value;
+
+        if (pin.length !== 4) {
+            e.preventDefault();
+            alert('El PIN debe tener exactamente 4 dígitos');
+            return false;
+        }
+
+        if (identificacion.trim() === '') {
+            e.preventDefault();
+            alert('La identificación es requerida');
+            return false;
+        }
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    });
+</script>
 </body>
 </html>

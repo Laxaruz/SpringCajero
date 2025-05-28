@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Movimientos - Cajero ATM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/styles/cajero.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="header-left">
+            <i class="fas fa-university"></i>
+            <span>Banco Digital</span>
+        </div>
+        <div class="header-right">
+            <span>Cajero Automático</span>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-history"></i> Historial de Movimientos</h1>
+        <p class="page-subtitle">Consulta el detalle de todas tus transacciones</p>
+    </div>
+
+    <div class="content-card">
+        <div class="card-header">
+            <h2><i class="fas fa-list-alt"></i> Movimientos de la Cuenta</h2>
+            <div class="account-info" th:if="${cuenta}">
+                <span><strong>Cuenta:</strong> <span th:text="${cuenta.numero}">****1234</span></span>
+            </div>
+        </div>
+
+        <div class="movements-container" th:if="${not #lists.isEmpty(movimientos)}">
+            <div class="table-responsive">
+                <table class="movements-table">
+                    <thead>
+                    <tr>
+                        <th><i class="fas fa-calendar-alt"></i> Fecha y Hora</th>
+                        <th><i class="fas fa-exchange-alt"></i> Tipo de Movimiento</th>
+                        <th class="text-right"><i class="fas fa-dollar-sign"></i> Monto</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="mov : ${movimientos}" class="movement-row">
+                        <td class="date-cell">
+                            <div class="date-container">
+                                <span class="date" th:text="${#temporals.format(mov.fecha, 'dd/MM/yyyy')}">01/01/2024</span>
+                                <span class="time" th:text="${#temporals.format(mov.fecha, 'HH:mm')}">10:30</span>
+                            </div>
+                        </td>
+                        <td class="type-cell">
+                            <div class="movement-type" th:classappend="${mov.tipo == 'DEBITO'} ? 'debit' : 'credit'">
+                                <i th:class="${mov.tipo == 'DEBITO'} ? 'fas fa-arrow-down' : 'fas fa-arrow-up'"></i>
+                                <span th:text="${mov.tipo == 'DEBITO'} ? 'Débito' : 'Crédito'">Débito</span>
+                            </div>
+                        </td>
+                        <td class="amount-cell text-right">
+                                    <span class="amount"
+                                          th:classappend="${mov.tipo == 'DEBITO'} ? 'negative' : 'positive'"
+                                          th:text="${mov.tipo == 'DEBITO' ? '-' : '+'} + '$' + ${#numbers.formatDecimal(mov.monto, 1, 2)}">
+                                        $1,000.00
+                                    </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${movimientos == null or movimientos.isEmpty()}">
+            <div class="empty-icon">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+            <h3>No hay movimientos registrados</h3>
+            <p>Aún no tienes transacciones en tu cuenta. Cuando realices operaciones aparecerán aquí.</p>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="#" onclick="window.print()" class="btn btn-secondary">
+            <i class="fas fa-print"></i> Imprimir
+        </a>
+        <a th:href="@{/cajero/consultas}" class="btn btn-primary">
+            <i class="fas fa-search"></i> Otras Consultas
+        </a>
+        <a th:href="@{/cajero/menu}" class="btn btn-primary">
+            <i class="fas fa-home"></i> Menú Principal
+        </a>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('beforeprint', function() {
+        document.body.classList.add('printing');
+    });
+
+    window.addEventListener('afterprint', function() {
+        document.body.classList.remove('printing');
+    });
+</script>
+</body>
+</html>

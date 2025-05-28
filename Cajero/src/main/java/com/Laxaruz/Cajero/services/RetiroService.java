@@ -30,7 +30,7 @@ public class RetiroService {
         if(!exito){
             throw new RuntimeException("No se puede realizar retiro");
         }
-        return "redirect:cajero/menu?mensaje=Retiro realizado con éxito";
+        return "redirect:/cajero/menu?mensaje=Retiro realizado con éxito";
     }
 
 }
