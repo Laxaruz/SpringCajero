@@ -114,15 +114,52 @@ public class CajeroController {
 
     @PostMapping("/retiro")
     public String realizarRetiro(@RequestParam String identificacion,
-                                 @RequestParam String numeroCuenta,
-                                 @RequestParam double monto, RedirectAttributes redirectAttributes) {
+                                 @RequestParam String numero,
+                                 @RequestParam double monto,
+                                 RedirectAttributes redirectAttributes) {
         try {
-            String resultado = retiroService.realizarRetiro(identificacion, numeroCuenta, monto);
+            retiroService.realizarRetiro(identificacion, numero, monto);
             redirectAttributes.addFlashAttribute("mensaje", "Retiro exitoso");
-            return resultado;
-        } catch (RuntimeException e) {
+            return "redirect:/cajero/menu";
+        } catch(RuntimeException e){
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/cajero/retiro";
         }
     }
+
+    @GetMapping("/transferir")
+    public String mostrarFormularioTransferencia(Model model) {
+        model.addAttribute("transferenciaForm", new TransferenciaForm());
+        return "cajero/transferir";
+    }
+
+    @PostMapping("/transferir")
+    public String transferir(@RequestParam String numeroCuentaDestino,
+                             @RequestParam double monto,
+                             HttpSession session,
+                             Model model) {
+        Cliente cliente = (Cliente) session.getAttribute("cliente");
+        if (cliente == null) return "redirect:/cajero";
+
+        Cuenta origen = cuentaService.buscarPorCliente(cliente)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No se encontró cuenta origen"));
+
+        try {
+            Cuenta destino = cuentaService.buscarPorNumero(numeroCuentaDestino)
+                    .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada"));
+
+            if (movimientoService.realizarTransferencia(origen, destino, monto)) {
+                model.addAttribute("mensaje", "Transferencia realizada con éxito");
+            } else {
+                model.addAttribute("error", "Saldo insuficiente para realizar la transferencia");
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Error: " + e.getMessage());
+        }
+
+        return "cajero/transferir";
+    }
 }
+

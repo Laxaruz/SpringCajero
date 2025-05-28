@@ -6,8 +6,11 @@
   <link rel="stylesheet" th:href="@{/styles/menu.css}">
 </head>
 <body>
-<h2>Bienvenido, <span th:text="${cliente.nombre}">Cliente</span></h2>
 
+
+<h2>Bienvenido, <span th:text="${cliente.nombre}">Cliente</span></h2>
+<div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+<div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
 <div class="menu-grid">
   <a th:href="@{/cajero/menu}" class="menu-item">
     <i class="fas fa-university"></i> MI BANCO
@@ -41,3 +44,4 @@
 <a th:href="@{/cajero/logout}" class="logout-btn">Cerrar sesión</a>
 </body>
 </html>
+

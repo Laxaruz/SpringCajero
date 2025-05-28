@@ -76,3 +76,38 @@ h2 {
 .logout-btn:hover {
     background-color: #ff3333;
 }
+.mensaje-exito {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+    padding: 1rem;
+    margin: 1rem auto;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    text-align: center;
+    max-width: 80%;
+    animation: fadeOut 0.5s ease-in-out 3s forwards;
+}
+
+.mensaje-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    margin: 1rem auto;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    text-align: center;
+    max-width: 80%;
+    animation: fadeOut 0.5s ease-in-out 3s forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
