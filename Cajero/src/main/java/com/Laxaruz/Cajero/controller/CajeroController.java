@@ -2,7 +2,6 @@ package com.Laxaruz.Cajero.controller;
 import com.Laxaruz.Cajero.Entity.Cliente;
 import com.Laxaruz.Cajero.Entity.Cuenta;
 import com.Laxaruz.Cajero.dto.TransferenciaForm;
-import com.Laxaruz.Cajero.repository.ClienteRepository;
 import com.Laxaruz.Cajero.repository.CuentaRepository;
 import com.Laxaruz.Cajero.services.ClienteService;
 import com.Laxaruz.Cajero.services.CuentaService;
