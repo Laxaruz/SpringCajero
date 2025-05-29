@@ -44,4 +44,14 @@ public class CuentaService {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    public void consignar(Cliente cliente, double monto) {
+        List<Cuenta> cuentas = buscarPorCliente(cliente);
+        if (cuentas.isEmpty()) {
+            throw new RuntimeException("El cliente no tiene cuentas para consignar");
+        }
+        Cuenta cuenta = cuentas.get(0); // Puedes ajustar si quieres otra lógica
+        double nuevoSaldo = cuenta.getSaldo() + monto;
+        cuenta.setSaldo(nuevoSaldo);
+        cuentaRepository.save(cuenta);
+    }
 }
