@@ -1,0 +1,43 @@
+# Ignorar archivos y directorios innecesarios para Docker
+
+# Target directory
+target/
+
+# Logs
+logs/
+*.log
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Temporary files
+*.tmp
+*.temp
+
+# Archives
+*.jar
+*.war
+*.zip
+*.tar.gz
+
+# Documentation
+README.md
+*.md
+
+# Scripts de PowerShell (específicos del entorno local)
+*.ps1
