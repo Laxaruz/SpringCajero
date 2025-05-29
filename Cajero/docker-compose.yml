@@ -17,7 +17,8 @@ services:
       - JAVA_OPTS=-Xmx512m -Xms256m
     volumes:
       - ./logs:/app/logs
-    restart: unless-stopped    healthcheck:
+    restart: unless-stopped    
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
