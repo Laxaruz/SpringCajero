@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicio no disponible - Laxaruz Bank</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/styles/error.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="error-container error-503">
+        <div class="error-icon">
+            <i class="fas fa-tools"></i>
+        </div>
+        
+        <div class="error-code">503</div>
+        
+        <h1 class="error-title">Servicio Temporalmente no Disponible</h1>
+        
+        <p class="error-message">Estamos realizando mantenimiento en el sistema</p>
+        
+        <p class="error-description">
+            Nuestros servicios bancarios están temporalmente fuera de línea debido a tareas 
+            de mantenimiento programado. Estaremos de vuelta en breve.
+        </p>
+        
+        <div class="error-actions">
+            <a href="javascript:location.reload()" class="btn btn-primary">
+                <i class="fas fa-sync-alt"></i>
+                Intentar de Nuevo
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Volver Atrás
+            </a>
+        </div>
+        
+        <!-- Estado del sistema -->
+        <div style="background: var(--background-light); border-radius: var(--border-radius); padding: 1.5rem; margin-top: 1.5rem; border: 1px solid var(--border-color);">
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1rem;">
+                <i class="fas fa-server"></i> Estado del Sistema
+            </h4>
+            <div style="display: grid; gap: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: white; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                    <span style="color: var(--text-secondary);">Servidor Web</span>
+                    <span style="color: var(--warning-color); font-weight: 600;">
+                        <i class="fas fa-exclamation-triangle"></i> Mantenimiento
+                    </span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: white; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                    <span style="color: var(--text-secondary);">Base de Datos</span>
+                    <span style="color: var(--warning-color); font-weight: 600;">
+                        <i class="fas fa-exclamation-triangle"></i> Mantenimiento
+                    </span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: white; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                    <span style="color: var(--text-secondary);">Sistema de Seguridad</span>
+                    <span style="color: var(--success-color); font-weight: 600;">
+                        <i class="fas fa-check-circle"></i> Operativo
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="error-info">
+            <h4><i class="fas fa-clock"></i> Tiempo Estimado</h4>
+            <p>El mantenimiento debería completarse en:</p>
+            <div style="background: white; border-radius: var(--border-radius); padding: 1rem; margin-top: 0.5rem; border: 2px solid var(--primary-color);">
+                <div id="countdown" style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center;">
+                    Calculando...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actualizaciones automáticas -->
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--border-radius); padding: 1rem; margin-top: 1.5rem;">
+            <p style="color: var(--success-color); margin: 0; font-weight: 500; text-align: center;">
+                <i class="fas fa-sync-alt fa-spin"></i> 
+                Esta página se actualizará automáticamente cada 30 segundos
+            </p>
+        </div>
+    </div>
+
+    <style>
+        .error-503 .error-icon {
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-503 .error-code {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        #countdown {
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+    </style>
+
+    <script>
+        // Countdown timer
+        function startCountdown() {
+            // Simular tiempo de mantenimiento (15 minutos)
+            let timeLeft = 15 * 60; // 15 minutos en segundos
+            
+            const countdownElement = document.getElementById('countdown');
+            
+            function updateCountdown() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                countdownElement.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} minutos`;
+                
+                if (timeLeft > 0) {
+                    timeLeft--;
+                } else {
+                    countdownElement.textContent = "¡Servicio restaurado!";
+                    countdownElement.style.color = 'var(--success-color)';
+                    
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 2000);
+                }
+            }
+            
+            updateCountdown(); // Llamada inicial
+            setInterval(updateCountdown, 1000); // Actualizar cada segundo
+        }
+        
+        // Auto-refresh cada 30 segundos
+        let refreshTimer = setInterval(function() {
+            // Simular verificación de disponibilidad
+            console.log('Verificando disponibilidad del servicio...');
+            
+            // En una implementación real, aquí harías una petición AJAX
+            // para verificar si el servicio está disponible
+            
+            // Por ahora, solo recargamos la página
+            window.location.reload();
+        }, 30000);
+        
+        // Mostrar notificación de auto-refresh
+        function showRefreshNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--primary-color);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow-lg);
+                z-index: 1000;
+                animation: slideInRight 0.5s ease-out;
+            `;
+            notification.innerHTML = '<i class="fas fa-sync-alt"></i> Verificando disponibilidad...';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(function() {
+                notification.remove();
+            }, 3000);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            startCountdown();
+            
+            // Mostrar notificación cada 30 segundos (justo antes del refresh)
+            setInterval(showRefreshNotification, 29000);
+        });
+        
+        // Agregar estilos para la animación
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

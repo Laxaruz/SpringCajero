@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Denegado - Laxaruz Bank</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/styles/error.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="error-container error-403">
+        <div class="error-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        
+        <div class="error-code">403</div>
+        
+        <h1 class="error-title">Acceso Denegado</h1>
+        
+        <p class="error-message">No tienes permisos para acceder a esta página</p>
+        
+        <p class="error-description">
+            Esta área está restringida y requiere permisos especiales. 
+            Si crees que deberías tener acceso, contacta al administrador del sistema.
+        </p>
+        
+        <div class="error-actions">
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Volver Atrás
+            </a>
+            <a th:href="@{/cajero/login}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                Iniciar Sesión
+            </a>
+        </div>
+        
+        <div class="error-info">
+            <h4><i class="fas fa-shield-alt"></i> Seguridad del Sistema</h4>
+            <p>Tu seguridad es nuestra prioridad:</p>
+            <ul style="text-align: left; margin-top: 0.5rem; color: var(--text-secondary);">
+                <li>Verifica que tengas los permisos necesarios</li>
+                <li>Asegúrate de haber iniciado sesión correctamente</li>
+                <li>Comprueba que tu sesión no haya expirado</li>
+                <li>Contacta al administrador si necesitas acceso especial</li>
+            </ul>
+        </div>
+        
+        <!-- Opciones de autenticación -->
+        <div style="background: var(--background-light); border-radius: var(--border-radius); padding: 1.5rem; margin-top: 1.5rem; border: 1px solid var(--border-color);">
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1rem;">
+                <i class="fas fa-key"></i> Opciones de Acceso
+            </h4>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <a th:href="@{/cajero/login}" style="text-decoration: none; color: var(--primary-color); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: var(--border-radius); background: white; border: 1px solid var(--border-color); transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> Acceso Cliente
+                </a>
+                <a th:href="@{/admin}" style="text-decoration: none; color: var(--danger-color); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: var(--border-radius); background: white; border: 1px solid var(--border-color); transition: all 0.3s ease;">
+                    <i class="fas fa-user-shield"></i> Acceso Admin
+                </a>
+            </div>
+        </div>
+        
+        <!-- Política de seguridad -->
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--border-radius); padding: 1.5rem; margin-top: 1.5rem;">
+            <h4 style="color: var(--danger-color); margin-bottom: 1rem; font-size: 1rem;">
+                <i class="fas fa-exclamation-triangle"></i> Política de Seguridad
+            </h4>
+            <p style="color: var(--danger-color); margin: 0; font-size: 0.9rem; line-height: 1.5;">
+                Por motivos de seguridad, todos los accesos están monitoreados y registrados. 
+                Los intentos de acceso no autorizados son reportados automáticamente al 
+                equipo de seguridad del sistema bancario.
+            </p>
+        </div>
+        
+        <!-- Información técnica para desarrolladores -->
+        <div th:if="${requestUri}" class="error-details">
+            <strong>Información técnica:</strong><br>
+            <span>URL solicitada: </span><span th:text="${requestUri}"></span><br>
+            <span>Código de estado: 403 Forbidden</span><br>
+            <span>Timestamp: </span><span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm:ss')}"></span>
+        </div>
+    </div>
+
+    <style>
+        /* Animación especial para 403 */
+        .error-403 .error-icon {
+            animation: lockShake 2s ease-in-out infinite;
+        }
+        
+        @keyframes lockShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        /* Efecto hover para opciones de acceso */
+        a[href*="cajero"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+            background: var(--primary-color) !important;
+            color: white !important;
+        }
+        
+        a[href*="admin"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
+            background: var(--danger-color) !important;
+            color: white !important;
+        }
+        
+        /* Parpadeo sutil para el mensaje de seguridad */
+        .error-info {
+            animation: securityGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes securityGlow {
+            0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.1); }
+            100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efecto de seguridad con parpadeo del candado
+            const lockIcon = document.querySelector('.fa-lock');
+            
+            setInterval(function() {
+                lockIcon.style.color = '#ef4444';
+                setTimeout(function() {
+                    lockIcon.style.color = '#ef4444';
+                }, 500);
+            }, 4000);
+            
+            // Detectar intentos repetidos de acceso
+            let accessAttempts = parseInt(localStorage.getItem('accessAttempts') || '0');
+            accessAttempts++;
+            localStorage.setItem('accessAttempts', accessAttempts.toString());
+            
+            if (accessAttempts > 3) {
+                const warningEl = document.createElement('div');
+                warningEl.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.2); border: 2px solid var(--danger-color); border-radius: var(--border-radius); padding: 1rem; margin-top: 1rem; animation: pulse 1s infinite;">
+                        <p style="color: var(--danger-color); margin: 0; font-weight: 600; text-align: center;">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            Múltiples intentos de acceso detectados. Su actividad está siendo monitoreada.
+                        </p>
+                    </div>
+                `;
+                document.querySelector('.error-container').appendChild(warningEl);
+            }
+            
+            // Limpiar intentos después de 1 hora
+            setTimeout(function() {
+                localStorage.removeItem('accessAttempts');
+            }, 3600000);
+        });
+    </script>
+</body>
+</html>

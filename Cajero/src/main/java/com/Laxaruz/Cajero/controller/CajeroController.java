@@ -7,8 +7,12 @@ import com.Laxaruz.Cajero.services.ClienteService;
 import com.Laxaruz.Cajero.services.CuentaService;
 import com.Laxaruz.Cajero.services.MovimientoService;
 import com.Laxaruz.Cajero.services.RetiroService;
+import com.Laxaruz.Cajero.util.AuditLogger;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/cajero")
 public class CajeroController {
+    private static final Logger logger = LoggerFactory.getLogger(CajeroController.class);
+    
     private final ClienteService clienteService;
     private final CuentaService cuentaService;
     private final MovimientoService movimientoService;
@@ -29,36 +35,82 @@ public class CajeroController {
     @GetMapping("/login")
     public String loginForm() {
         return "cajero/login";
-    }
-
-    @PostMapping("/login")
+    }    @PostMapping("/login")
     public String login(@RequestParam String numeroCuenta, @RequestParam String pin,
-                        HttpSession session, Model model) {
-        var cuenta = cuentaService.buscarPorNumero(numeroCuenta);
-        if (cuenta.isEmpty()) {
-            model.addAttribute("error", "La cuenta no existe");
-            return "cajero/login";
-        }
-
-        Cliente cliente = cuenta.get().getCliente();
-        if (cliente.isBloqueado()) {
-            model.addAttribute("error", "La cuenta está bloqueada");
-            return "cajero/login";
-        }
-        if (!cliente.getPin().equals(pin)) {
-            clienteService.incrementarIntento(cliente);
-            if (cliente.getIntentos() >= 3) {
-                clienteService.bloquearCliente(cliente);
-                model.addAttribute("error", "La cuenta está bloqueada por intentos fallidos");
-
-            } else {
-                model.addAttribute("error", "Pin Incorrecto");
+                        HttpSession session, Model model, HttpServletRequest request) {
+        
+        AuditLogger.PerformanceTimer timer = new AuditLogger.PerformanceTimer("LOGIN_ATTEMPT");
+        String clientIp = getClientIpAddress(request);
+        
+        logger.info("Intento de login para cuenta: {} desde IP: {}", numeroCuenta, clientIp);
+        
+        try {
+            var cuenta = cuentaService.buscarPorNumero(numeroCuenta);
+            if (cuenta.isEmpty()) {
+                AuditLogger.logLoginAttempt(numeroCuenta, clientIp, false, "CUENTA_NO_EXISTE");
+                model.addAttribute("error", "La cuenta no existe");
+                return "cajero/login";
             }
+
+            Cliente cliente = cuenta.get().getCliente();
+            
+            if (cliente.isBloqueado()) {
+                AuditLogger.logLoginAttempt(numeroCuenta, clientIp, false, "CUENTA_BLOQUEADA");
+                model.addAttribute("error", "La cuenta está bloqueada");
+                return "cajero/login";
+            }
+            
+            if (!cliente.getPin().equals(pin)) {
+                clienteService.incrementarIntento(cliente);
+                logger.warn("PIN incorrecto para cuenta: {}. Intentos: {}", numeroCuenta, cliente.getIntentos());
+                
+                if (cliente.getIntentos() >= 3) {
+                    clienteService.bloquearCliente(cliente);
+                    AuditLogger.logAccountBlock(numeroCuenta, "EXCESO_INTENTOS_FALLIDOS", "SISTEMA_AUTOMATICO");
+                    AuditLogger.logLoginAttempt(numeroCuenta, clientIp, false, "CUENTA_BLOQUEADA_POR_INTENTOS");
+                    model.addAttribute("error", "La cuenta está bloqueada por intentos fallidos");
+                } else {
+                    AuditLogger.logLoginAttempt(numeroCuenta, clientIp, false, "PIN_INCORRECTO");
+                    model.addAttribute("error", "Pin Incorrecto");
+                }
+                return "cajero/login";
+            }
+            
+            // Login exitoso
+            clienteService.reiniciarIntentos(cliente);
+            session.setAttribute("cliente", cliente);
+            
+            AuditLogger.logLoginAttempt(numeroCuenta, clientIp, true, "LOGIN_EXITOSO");
+            logger.info("Login exitoso para cuenta: {} desde IP: {}", numeroCuenta, clientIp);
+            
+            timer.finish("Login exitoso");
+            return "redirect:/cajero/menu";
+            
+        } catch (Exception e) {
+            logger.error("Error durante el login para cuenta: {}", numeroCuenta, e);
+            AuditLogger.logCriticalError("LOGIN_ERROR", "Error durante proceso de login", 
+                "CajeroController.login", e);
+            model.addAttribute("error", "Error interno del sistema. Intenta de nuevo.");
+            timer.finish("Error en login");
             return "cajero/login";
         }
-        clienteService.reiniciarIntentos(cliente);
-        session.setAttribute("cliente", cliente);
-        return "redirect:/cajero/menu";
+    }
+    
+    /**
+     * Obtener la dirección IP real del cliente
+     */
+    private String getClientIpAddress(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty() && !"unknown".equalsIgnoreCase(xForwardedFor)) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isEmpty() && !"unknown".equalsIgnoreCase(xRealIp)) {
+            return xRealIp;
+        }
+        
+        return request.getRemoteAddr();
     }
 
     @GetMapping("/menu")
@@ -197,26 +249,66 @@ public class CajeroController {
     @GetMapping("/cambiar-clave")
     public String mostrarFormularioCambioClave() {
         return "cajero/cambiar-clave";
-    }
-    @PostMapping("/cambiar-clave")
+    }    @PostMapping("/cambiar-clave")
     public String cambiarClave(@RequestParam String claveActual,
-                               @RequestParam String nuevaClave,@RequestParam String confirmarClave,
-                               HttpSession session, Model model){
+                               @RequestParam String nuevaClave, @RequestParam String confirmarClave,
+                               HttpSession session, Model model, HttpServletRequest request) {
+        
+        AuditLogger.PerformanceTimer timer = new AuditLogger.PerformanceTimer("CHANGE_PIN");
+        String clientIp = getClientIpAddress(request);
+        
         Cliente cliente = (Cliente) session.getAttribute("cliente");
-        if (cliente == null){
+        if (cliente == null) {
+            logger.warn("Intento de cambio de PIN sin sesión activa desde IP: {}", clientIp);
             return "redirect:/cajero/login";
         }
-        if (!cliente.getPin().equals(claveActual)) {
-            model.addAttribute("error", "Clave actual incorrecta.");
-            return "cajero/cambiar-clave";
+        
+        String numeroCuenta = cuentaService.buscarPorCliente(cliente)
+            .stream().findFirst().map(Cuenta::getNumero).orElse("UNKNOWN");
+        
+        logger.info("Intento de cambio de PIN para cliente ID: {} desde IP: {}", cliente.getId(), clientIp);
+        
+        try {
+            if (!cliente.getPin().equals(claveActual)) {
+                logger.warn("PIN actual incorrecto en cambio de clave para cliente: {}", cliente.getId());
+                AuditLogger.logPinChange(numeroCuenta, cliente.getId().toString(), clientIp, false);
+                model.addAttribute("error", "Clave actual incorrecta.");
+                return "cajero/cambiar-clave";
+            }
+            
+            if (!nuevaClave.equals(confirmarClave)) {
+                logger.warn("Confirmación de PIN no coincide para cliente: {}", cliente.getId());
+                model.addAttribute("error", "Las nuevas claves no coinciden.");
+                return "cajero/cambiar-clave";
+            }
+            
+            // Validaciones adicionales para el nuevo PIN
+            if (nuevaClave.length() < 4) {
+                model.addAttribute("error", "El PIN debe tener al menos 4 dígitos.");
+                return "cajero/cambiar-clave";
+            }
+            
+            if (!nuevaClave.matches("\\d+")) {
+                model.addAttribute("error", "El PIN debe contener solo números.");
+                return "cajero/cambiar-clave";
+            }
+            
+            clienteService.cambiarPin(cliente, nuevaClave);
+            session.setAttribute("cliente", cliente);
+            
+            AuditLogger.logPinChange(numeroCuenta, cliente.getId().toString(), clientIp, true);
+            logger.info("PIN cambiado exitosamente para cliente: {} desde IP: {}", cliente.getId(), clientIp);
+            
+            model.addAttribute("mensaje", "Clave cambiada exitosamente.");
+            timer.finish("Cambio de PIN exitoso");
+            
+        } catch (Exception e) {
+            logger.error("Error durante cambio de PIN para cliente: {}", cliente.getId(), e);
+            AuditLogger.logCriticalError("PIN_CHANGE_ERROR", "Error durante cambio de PIN", 
+                "CajeroController.cambiarClave", e);
+            model.addAttribute("error", "Error interno del sistema. Intenta de nuevo.");
+            timer.finish("Error en cambio de PIN");
         }
-        if (!nuevaClave.equals(confirmarClave)) {
-            model.addAttribute("error", "Las nuevas claves no coinciden.");
-            return "cajero/cambiar-clave";
-        }
-        clienteService.cambiarPin(cliente, nuevaClave);
-
-        session.setAttribute("cliente", cliente);
 
         model.addAttribute("mensaje", "Clave cambiada exitosamente.");
         return "cajero/cambiar-clave";

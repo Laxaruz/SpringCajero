@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada - Laxaruz Bank</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/styles/error.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="error-container error-404">
+        <div class="error-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        
+        <div class="error-code">404</div>
+        
+        <h1 class="error-title">¡Ups! Página no encontrada</h1>
+        
+        <p class="error-message">La página que buscas no existe o ha sido movida</p>
+        
+        <p class="error-description">
+            Es posible que la URL esté mal escrita, que hayas seguido un enlace roto, 
+            o que la página haya sido eliminada o reubicada.
+        </p>
+        
+        <div class="error-actions">
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Volver Atrás
+            </a>
+            <a th:href="@{/cajero/login}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                Ir al Cajero
+            </a>
+            <a th:href="@{/admin}" class="btn btn-secondary">
+                <i class="fas fa-user-shield"></i>
+                Panel Admin
+            </a>
+        </div>
+        
+        <div class="error-info">
+            <h4><i class="fas fa-lightbulb"></i> Sugerencias</h4>
+            <p>¿Qué puedes hacer ahora?</p>
+            <ul style="text-align: left; margin-top: 0.5rem; color: var(--text-secondary);">
+                <li>Verifica que la URL esté escrita correctamente</li>
+                <li>Usa el menú de navegación para encontrar lo que buscas</li>
+                <li>Regresa a la página principal del cajero</li>
+                <li>Accede al panel de administración si eres administrador</li>
+            </ul>
+        </div>
+        
+        <!-- Páginas populares -->
+        <div style="background: var(--background-light); border-radius: var(--border-radius); padding: 1.5rem; margin-top: 1.5rem; border: 1px solid var(--border-color);">
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1rem;">
+                <i class="fas fa-star"></i> Páginas más visitadas
+            </h4>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <a th:href="@{/cajero/login}" style="text-decoration: none; color: var(--primary-color); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: var(--border-radius); background: white; border: 1px solid var(--border-color); transition: all 0.3s ease;">
+                    <i class="fas fa-sign-in-alt"></i> Login Cajero
+                </a>
+                <a th:href="@{/admin}" style="text-decoration: none; color: var(--primary-color); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: var(--border-radius); background: white; border: 1px solid var(--border-color); transition: all 0.3s ease;">
+                    <i class="fas fa-cog"></i> Administración
+                </a>
+            </div>
+        </div>
+        
+        <!-- Información técnica para desarrolladores -->
+        <div th:if="${requestUri}" class="error-details">
+            <strong>Información técnica:</strong><br>
+            <span>URL solicitada: </span><span th:text="${requestUri}"></span><br>
+            <span>Método: GET</span><br>
+            <span>Timestamp: </span><span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm:ss')}"></span>
+        </div>
+    </div>
+
+    <style>
+        /* Animación especial para 404 */
+        .error-404 .error-icon {
+            animation: shake 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-5deg); }
+            50% { transform: translateX(5px) rotate(5deg); }
+            75% { transform: translateX(-5px) rotate(-5deg); }
+            100% { transform: translateX(0); }
+        }
+        
+        /* Efecto hover para enlaces populares */
+        a[href*="cajero"]:hover,
+        a[href*="admin"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+            background: var(--primary-color) !important;
+            color: white !important;
+        }
+    </style>
+
+    <script>
+        // Efecto de búsqueda animado
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchIcon = document.querySelector('.fa-search');
+            
+            setInterval(function() {
+                searchIcon.style.transform = 'scale(1.2)';
+                setTimeout(function() {
+                    searchIcon.style.transform = 'scale(1)';
+                }, 300);
+            }, 3000);
+            
+            // Sugerir correcciones automáticas basadas en la URL
+            const currentPath = window.location.pathname;
+            const suggestions = {
+                '/cajero': '/cajero/login',
+                '/admin': '/admin',
+                '/login': '/cajero/login',
+                '/home': '/cajero/login',
+                '/index': '/cajero/login'
+            };
+            
+            for (const [wrong, correct] of Object.entries(suggestions)) {
+                if (currentPath.includes(wrong) && currentPath !== correct) {
+                    const suggestionEl = document.createElement('div');
+                    suggestionEl.innerHTML = `
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--border-radius); padding: 1rem; margin-top: 1rem;">
+                            <p style="color: var(--success-color); margin: 0; font-weight: 500;">
+                                <i class="fas fa-lightbulb"></i> ¿Quisiste ir a <a href="${correct}" style="color: var(--success-color); text-decoration: underline;">${correct}</a>?
+                            </p>
+                        </div>
+                    `;
+                    document.querySelector('.error-container').appendChild(suggestionEl);
+                    break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

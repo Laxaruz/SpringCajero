@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Laxaruz Bank'">Error - Laxaruz Bank</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/styles/error.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="error-container" th:classappend="'error-' + ${errorCode}">
+        <div class="error-icon">
+            <i th:class="${iconClass}"></i>
+        </div>
+        
+        <div class="error-code" th:text="${errorCode}">500</div>
+        
+        <h1 class="error-title" th:text="${title}">Oops! Algo salió mal</h1>
+        
+        <p class="error-message" th:text="${message}">Hemos encontrado un problema inesperado</p>
+        
+        <p class="error-description" th:text="${description}">
+            Nuestro equipo técnico ha sido notificado y está trabajando para solucionarlo.
+        </p>
+        
+        <div class="error-actions">
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Volver Atrás
+            </a>
+            <a th:href="@{/cajero/login}" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Ir al Inicio
+            </a>
+        </div>
+        
+        <div class="error-info">
+            <h4><i class="fas fa-info-circle"></i> ¿Necesitas ayuda?</h4>
+            <p>Si el problema persiste, puedes:</p>
+            <ul style="text-align: left; margin-top: 0.5rem; color: var(--text-secondary);">
+                <li>Refrescar la página (F5)</li>
+                <li>Verificar tu conexión a internet</li>
+                <li>Intentar nuevamente en unos minutos</li>
+                <li>Contactar al soporte técnico si el error continúa</li>
+            </ul>
+        </div>
+        
+        <!-- Mostrar detalles técnicos solo en desarrollo -->
+        <div th:if="${requestUri}" class="error-details">
+            <strong>Detalles técnicos:</strong><br>
+            <span>URL solicitada: </span><span th:text="${requestUri}"></span><br>
+            <span>Código de error: </span><span th:text="${errorCode}"></span><br>
+            <span>Timestamp: </span><span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm:ss')}"></span>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh después de 30 segundos para errores 500
+        if (window.location.search.includes('500') || document.querySelector('.error-500')) {
+            setTimeout(function() {
+                if (confirm('¿Deseas intentar recargar la página automáticamente?')) {
+                    window.location.reload();
+                }
+            }, 30000);
+        }
+        
+        // Efecto de aparición suave
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.error-container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(30px)';
+            
+            setTimeout(function() {
+                container.style.transition = 'all 0.6s ease-out';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
